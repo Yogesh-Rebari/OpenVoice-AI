@@ -1,7 +1,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ComplaintContext, Message } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const getAI = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please set it in the environment variables.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 const SYSTEM_PROMPT = `
 You are the AI assistant for "OpenVoice AI – Anonymous Complaint & Issue Reporting System".
@@ -20,6 +26,8 @@ IMPORTANT:
 - ALWAYS try to fill the "category" and "subcategory" fields in the updatedContext. 
 - If you are unsure, make your best guess based on the user's initial description. 
 - DO NOT leave them empty if an issue has been described.
+- KEEP "reply" and "description" CONCISE (max 200 words each). Avoid repetition.
+- The "description" should be a summary of the issue, not a transcript.
 
 ANONYMITY RULES:
 - NEVER ask for name or personal details.
@@ -55,16 +63,25 @@ export async function processMessage(
   isReadyForSummary: boolean;
   isSubmitted: boolean;
 }> {
-  // Limit history to last 10 messages to keep context window clean and avoid truncation
-  const history = messages.slice(-10).map(m => ({
+  const ai = getAI();
+  
+  // Sanitize and truncate input to prevent context bloat
+  const sanitizedContext = {
+    ...currentContext,
+    description: currentContext.description.slice(0, 2000), // Max 2000 chars
+    issue: currentContext.issue.slice(0, 500)
+  };
+
+  // Limit history to last 8 messages (reduced from 10) to save space
+  const history = messages.slice(-8).map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
+    parts: [{ text: m.content.slice(0, 1000) }] // Truncate long messages
   }));
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: [
-      { role: 'user', parts: [{ text: `Current Context: ${JSON.stringify(currentContext)}` }] },
+      { role: 'user', parts: [{ text: `Current Context: ${JSON.stringify(sanitizedContext)}` }] },
       ...history
     ],
     config: {
@@ -109,7 +126,7 @@ export async function processMessage(
       }
     };
   } catch (e) {
-    console.error("Failed to parse AI response", e);
+    console.error("Failed to parse AI response. Length:", response.text?.length, e);
     return {
       reply: "I'm sorry, I encountered an error processing your request. Could you please try again?",
       updatedContext: currentContext,

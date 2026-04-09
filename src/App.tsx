@@ -34,6 +34,7 @@ export default function App() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackText, setFeedbackText] = useState('');
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -58,6 +59,7 @@ export default function App() {
       const result = await processMessage(newMessages, context);
       setMessages([...newMessages, { role: 'assistant', content: result.reply }]);
       setContext(result.updatedContext);
+      setIsReady(result.isReadyForSummary);
       if (result.isSubmitted) {
         setIsSubmitted(true);
         toast.success("Complaint registered successfully", {
@@ -66,7 +68,8 @@ export default function App() {
       }
     } catch (error) {
       console.error(error);
-      setMessages([...newMessages, { role: 'assistant', content: "CONNECTION ERROR. Retrying secure handshake..." }]);
+      const errorMessage = error instanceof Error ? error.message : "CONNECTION ERROR. Retrying secure handshake...";
+      setMessages([...newMessages, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
@@ -367,6 +370,31 @@ export default function App() {
                     </p>
                   </div>
                 </div>
+
+                {isReady && !isSubmitted && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="pt-4"
+                  >
+                    <Button 
+                      onClick={() => {
+                        setIsSubmitted(true);
+                        toast.success("Complaint registered successfully", {
+                          description: "Your report has been encrypted and queued for processing.",
+                        });
+                      }}
+                      className="w-full bg-emerald-500 text-black hover:bg-emerald-400 font-bold py-6 rounded-xl shadow-lg shadow-emerald-500/20 group relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+                      <CheckCircle2 className="w-5 h-5 mr-2" />
+                      CONFIRM & SUBMIT REPORT
+                    </Button>
+                    <p className="text-[10px] text-center text-gray-600 font-mono mt-3 uppercase tracking-widest">
+                      Final verification required for transmission
+                    </p>
+                  </motion.div>
+                )}
 
                 {isSubmitted && (
                   <motion.div 
