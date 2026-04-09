@@ -25,69 +25,9 @@ OpenVoice AI is a high-security, anonymous platform designed for reporting commu
 
 - Node.js (v18 or higher)
 - npm or yarn
-- A Google Gemini API Key (Get one at [Google AI Studio](https://aistudio.google.com/))
+- A Google Gemini API Key
 
-## ⚙️ Installation & Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/openvoice-ai.git
-   cd openvoice-ai
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory and add your Gemini API key:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-4. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-   The app will be available at `http://localhost:3000`.
-
-## 🏗️ Deployment
-
-### Recommended Hosting Platforms
-
-Since OpenVoice AI is a full-stack application (Express + React), you should host it on platforms that support Node.js environments:
-
-1. **Google Cloud Run (Recommended)**:
-   - Perfect for containerized apps.
-   - Scale to zero when not in use (cost-effective).
-   - High security and reliability.
-
-2. **Render**:
-   - Very easy to set up.
-   - Connect your GitHub repo and it handles the rest.
-   - Choose "Web Service" for the Express backend.
-
-3. **Railway**:
-   - Excellent developer experience.
-   - Automatic deployments and easy environment variable management.
-
-4. **DigitalOcean App Platform**:
-   - Robust and scalable.
-   - Good for production-grade applications.
-
-### Build Command
-To prepare the app for production:
-```bash
-npm run build
 ```
-This will generate the static assets in the `dist` folder, which the Express server will serve in production mode.
-
-## 🔒 Security & Privacy
-
-OpenVoice AI is built with a "Privacy by Design" approach:
-- **No Database by Default**: In this version, reports are processed in-memory. For production, integrate with a secure database like Firestore or PostgreSQL.
-- **PII Scrubbing**: The AI is instructed to never request or store names, emails, or phone numbers unless explicitly volunteered by the user for follow-up.
 
 ## 📄 License
 
