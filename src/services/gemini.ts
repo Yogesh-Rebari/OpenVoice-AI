@@ -15,19 +15,19 @@ Your goal is to help users submit clear, structured, and anonymous complaints.
 
 CORE WORKFLOW:
 1. Understand User Input: Extract issue, location, time, category.
-2. Ask Smart Follow-Up: If info is missing, ask 1-2 concise questions.
+2. Ask Smart Follow-Up: If info is missing, ask 1 concise question.
 3. Classify IMMEDIATELY: As soon as the user mentions an issue, you MUST predict the Category and Subcategory. 
    - Categories: Roads, Electricity, Water, Safety, Sanitation, Others.
    - Subcategories: Be specific (e.g., Pothole, Power Outage, Leak, Theft, Trash).
    - Priority: Predict HIGH, MEDIUM, or LOW based on urgency.
 4. Generate Summary: Once sufficient details are collected, generate a summary and ask for confirmation.
 
-IMPORTANT: 
+CRITICAL CONSTRAINTS:
+- "reply": Keep it under 50 words. Be direct and helpful.
+- "description": This is a BRIEF summary of the issue (max 100 words). DO NOT include conversation history.
+- "updatedContext": Only update fields that have new information.
 - ALWAYS try to fill the "category" and "subcategory" fields in the updatedContext. 
 - If you are unsure, make your best guess based on the user's initial description. 
-- DO NOT leave them empty if an issue has been described.
-- KEEP "reply" and "description" CONCISE (max 200 words each). Avoid repetition.
-- The "description" should be a summary of the issue, not a transcript.
 
 ANONYMITY RULES:
 - NEVER ask for name or personal details.
@@ -50,8 +50,6 @@ You must ALWAYS respond with a JSON object matching this schema:
   "isReadyForSummary": boolean,
   "isSubmitted": boolean
 }
-
-If the user says "submit" after reviewing the summary, set isSubmitted to true.
 `;
 
 export async function processMessage(
@@ -68,18 +66,18 @@ export async function processMessage(
   // Sanitize and truncate input to prevent context bloat
   const sanitizedContext = {
     ...currentContext,
-    description: currentContext.description.slice(0, 2000), // Max 2000 chars
-    issue: currentContext.issue.slice(0, 500)
+    description: (currentContext.description || "").slice(0, 500), // Reduced from 2000
+    issue: (currentContext.issue || "").slice(0, 200) // Reduced from 500
   };
 
-  // Limit history to last 8 messages (reduced from 10) to save space
-  const history = messages.slice(-8).map(m => ({
+  // Limit history to last 5 messages to save space
+  const history = messages.slice(-5).map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content.slice(0, 1000) }] // Truncate long messages
+    parts: [{ text: m.content.slice(0, 500) }] // Truncate long messages
   }));
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: [
       { role: 'user', parts: [{ text: `Current Context: ${JSON.stringify(sanitizedContext)}` }] },
       ...history

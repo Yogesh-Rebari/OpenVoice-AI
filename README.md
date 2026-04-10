@@ -67,6 +67,9 @@ Since OpenVoice AI is a full-stack application (Express + React), you should hos
    - Very easy to set up.
    - Connect your GitHub repo and it handles the rest.
    - Choose "Web Service" for the Express backend.
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm start`
+   - **Environment Variables:** Add `GEMINI_API_KEY` and `NODE_ENV=production`.
 
 3. **Railway**:
    - Excellent developer experience.

@@ -184,9 +184,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 overflow-hidden">
+      <main className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 lg:overflow-hidden">
         {/* Chat Section */}
-        <section className="lg:col-span-7 flex flex-col h-[calc(100vh-160px)] min-h-[500px]">
+        <section className="lg:col-span-7 flex flex-col h-auto lg:h-[calc(100vh-140px)] min-h-[500px]">
           <Card className="flex-1 flex flex-col overflow-hidden border-white/5 bg-[#0D0D0F]/50 backdrop-blur-sm shadow-2xl">
             <CardHeader className="border-b border-white/5 bg-white/[0.02] py-4">
               <div className="flex items-center justify-between">
@@ -285,7 +285,7 @@ export default function App() {
         </section>
 
         {/* Summary Section */}
-        <section className="lg:col-span-5 flex flex-col h-[calc(100vh-160px)] min-h-[500px]">
+        <section className="lg:col-span-5 flex flex-col h-auto lg:h-[calc(100vh-140px)] min-h-[500px]">
           <Card className="flex-1 flex flex-col overflow-hidden border-white/5 bg-[#0D0D0F]/50 backdrop-blur-sm shadow-2xl">
             <CardHeader className="bg-white/[0.02] border-b border-white/5 py-4">
               <div className="flex items-center justify-between">
@@ -378,7 +378,7 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="pt-4"
+                    className="pt-6 pb-8"
                   >
                     <Button 
                       onClick={() => {
@@ -387,13 +387,13 @@ export default function App() {
                           description: "Your report has been encrypted and queued for processing.",
                         });
                       }}
-                      className="w-full bg-emerald-500 text-black hover:bg-emerald-400 font-bold py-6 rounded-xl shadow-lg shadow-emerald-500/20 group relative overflow-hidden"
+                      className="w-full bg-emerald-500 text-black hover:bg-emerald-400 font-bold py-7 rounded-xl shadow-lg shadow-emerald-500/20 group relative overflow-hidden transition-all active:scale-[0.98]"
                     >
                       <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
                       <CheckCircle2 className="w-5 h-5 mr-2" />
                       CONFIRM & SUBMIT REPORT
                     </Button>
-                    <p className="text-[10px] text-center text-gray-600 font-mono mt-3 uppercase tracking-widest">
+                    <p className="text-[10px] text-center text-gray-600 font-mono mt-4 uppercase tracking-widest opacity-50">
                       Final verification required for transmission
                     </p>
                   </motion.div>
