@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Message, ComplaintContext, INITIAL_CONTEXT } from './types';
 import { processMessage } from './services/gemini';
 import { Button } from './components/ui/button';
@@ -39,6 +39,9 @@ export default function App() {
   const [feedbackText, setFeedbackText] = useState('');
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const anonymousId = useMemo(() => Math.random().toString(36).substring(7).toUpperCase(), []);
+  const transmissionId = useMemo(() => `#OV-${Math.floor(Math.random() * 1000000).toString(16).toUpperCase()}`, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -176,7 +179,7 @@ export default function App() {
           
           <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
             <Lock className="w-3 h-3 text-emerald-500" />
-            <span className="text-[10px] font-mono text-gray-400">ANONYMOUS_ID: {Math.random().toString(36).substring(7).toUpperCase()}</span>
+            <span className="text-[10px] font-mono text-gray-400">ANONYMOUS_ID: {anonymousId}</span>
           </div>
         </div>
       </header>
@@ -407,7 +410,7 @@ export default function App() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white uppercase tracking-tight">Transmission Successful</p>
-                      <p className="text-[10px] font-mono text-emerald-500/70 mt-0.5">ID: #OV-{Math.floor(Math.random() * 1000000).toString(16).toUpperCase()}</p>
+                      <p className="text-[10px] font-mono text-emerald-500/70 mt-0.5">ID: {transmissionId}</p>
                     </div>
                   </motion.div>
                 )}
